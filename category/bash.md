@@ -1,6 +1,7 @@
 ---
 layout: posts_by_category
 categories: bash
-title: Bash
+title: bash
 permalink: /category/bash
 ---
+

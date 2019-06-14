@@ -8,7 +8,7 @@ google_analytics: UA-125341308-1
 avatar_url: /static/img/avatar.jpg
 
 enableTags: true
-tagarray: [google]
+tagarray: [google,k8s]
 
 collections:
   project:
