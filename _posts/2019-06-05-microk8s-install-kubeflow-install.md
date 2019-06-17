@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Kubeflow On MicroK8s"
+title:  "GCE On MicroK8s"
 date:   2019-06-05 00:18:23 +0900
 categories: [kubernetes,kubeflow,ml,pipeline]
 ---
@@ -9,6 +9,8 @@ categories: [kubernetes,kubeflow,ml,pipeline]
 
 그리고, Machine Learning과 Bigdata와 같은 유연한 자원을 필요로 하는 분야에서도 Container Base의 Architecture를 생각 하게 되었다. 그 예로, Redis Cluster나 Kafka와 같은 MiddleWare의 Clustering은 Container Base의 Stateful한 Container를 통해 무중단의 Service가 가능한 상태의 서비스를 구축 한다. 자세한 내용은 Redis Lab의 [Redis Cluster for Kubernetes](https://sanderp.nl/running-redis-cluster-on-kubernetes-e451bda76cad)내용을 참고 하기 바란다. 
 
+여기서는 Google Cloud Compute Engine을 이용하여, Microk8s를 설치하는 것 부터, Kubeflow를 설치 하는 것까지 이야기 해보고자 한다. 
+
 ## Compute Engien Provisioning
 
 Google Cloud Compute Engine에서 Compute Engine을 생성 한다. 이때, OS는 Ubuntu (내지는 Debian) Linux를 사용 한다. 이때 Kubeflow에서 사용하기 위해 GPU또한 Provisioning 해야 하는데, Google Cloud Compute Engine에서는 us-west1-b, europe-west4-a (NVIDIA® Tesla® P100), us-west1-b, europe-west4-a (NVIDIA® Tesla® K80)에서 사용 가능하다. 이때, Linux인스턴스나 Windows Server Instance에서 Driver를 설치 해야 하는데, 지원되는 Driver Version은 아래와 같다. 
@@ -16,12 +18,11 @@ Google Cloud Compute Engine에서 Compute Engine을 생성 한다. 이때, OS는
 여기서는 Unbuntu 18.04-LTS를 기준으로 설명 하고자 한다. 
 
 > - **Linux 인스턴스:**
->
->   - NVIDIA 410.79 이상 드라이버
->
->     - 예) Install
->
->    ```shell
+>- NVIDIA 410.79 이상 드라이버
+>   
+>  - 예) Install
+> 
+>```shell
 >    # Remove Install Driver 
 >    $ sudo rm /etc/apt/sources.list.d/cuda*
 >    $ sudo apt remove nvidia-cuda-toolkit
@@ -33,12 +34,12 @@ Google Cloud Compute Engine에서 Compute Engine을 생성 한다. 이때, OS는
 >    # GPU driver Repository Add
 >    $ sudo add-apt-repository ppa:graphics-drivers/ppa
 >    # Add Repository 
->   
->    $ sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list'
+>    
+>   $ sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list'
 >    $ sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda_learn.list'
 >    # All apt update & upgrade
->   
->    $ sudo apt update -y
+>    
+>   $ sudo apt update -y
 >    $ sudo apt upgrade -y
 >    # CUDA Install & libcudnn7
 >    $ sudo apt install cuda-10-1 -y && sudo apt install libcudnn7 -y && sudo apt install nvidia-cuda-toolkit -y
@@ -54,8 +55,8 @@ Google Cloud Compute Engine에서 Compute Engine을 생성 한다. 이때, OS는
 >    # nvidia driver install check
 >    $ nvidia-smi 
 >    ```
->
-> - **Windows Server 인스턴스:**
+>    
+>- **Windows Server 인스턴스:**
 > - NVIDIA 411.98 이상 드라이버
 
 nvidia의 Driver Version은 [여기]([http://developer.download.nvidia.com/compute/cuda/repos/](http://developer.download.nvidia.com/compute/cuda/repos/))에서 확인 할 수 있다. 
